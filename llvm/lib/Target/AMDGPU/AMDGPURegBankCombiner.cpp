@@ -412,7 +412,7 @@ bool AMDGPURegBankCombinerImpl::lowerUniformBFX(MachineInstr &MI) const {
   const LLT S32 = LLT::scalar(32);
   LLT Ty = MRI.getType(DstReg);
 
-  const unsigned Opc = (Ty == S32)
+  const unsigned Opc = Ty == S32
                            ? (Signed ? AMDGPU::S_BFE_I32 : AMDGPU::S_BFE_U32)
                            : (Signed ? AMDGPU::S_BFE_I64 : AMDGPU::S_BFE_U64);
 

@@ -5255,7 +5255,7 @@ void TagStoreEdit::emitCode(MachineBasicBlock::iterator &InsertI,
   Register Reg;
   FrameRegOffset = TFI->resolveFrameOffsetReference(
       *MF, FirstTagStore.Offset, false /*isFixed*/, false /*isSVE*/, Reg,
-      /*PreferFP=*/false, /*ForSimm=*/true);
+      /*PreferFP=*/false, /*ForSimm=*/true, /*FI=*/-1);
   FrameReg = Reg;
   FrameRegUpdate = std::nullopt;
 

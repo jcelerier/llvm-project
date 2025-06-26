@@ -9152,7 +9152,7 @@ AArch64TargetLowering::LowerCall(CallLoweringInfo &CLI,
       if (isScalable) {
         bool IsPred = VA.getValVT() == MVT::aarch64svcount ||
                       VA.getValVT().getVectorElementType() == MVT::i1;
-        MFI.setStackID(FI, IsPred ? TargetStackID::ScalablePredVector
+        MFI.setStackID(FI, IsPred ? TargetStackID::ScalablePredicateVector
                                   : TargetStackID::ScalableVector);
       }
 

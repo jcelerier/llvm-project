@@ -111,7 +111,7 @@ public:
       return false;
     case TargetStackID::Default:
     case TargetStackID::ScalableVector:
-    case TargetStackID::ScalablePredVector:
+    case TargetStackID::ScalablePredicateVector:
     case TargetStackID::NoAlloc:
       return true;
     }
@@ -121,7 +121,7 @@ public:
     // We don't support putting SVE objects into the pre-allocated local
     // frame block at the moment.
     return (StackId != TargetStackID::ScalableVector &&
-            StackId != TargetStackID::ScalablePredVector);
+            StackId != TargetStackID::ScalablePredicateVector);
   }
 
   void

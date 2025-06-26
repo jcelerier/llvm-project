@@ -3555,9 +3555,9 @@ bool AArch64FrameLowering::spillCalleeSavedRegisters(
       if (RPI.isPaired())
         MFI.setStackID(FrameIdxReg2, TargetStackID::ScalableVector);
     } else if (RPI.Type == RegPairInfo::PPR) {
-      MFI.setStackID(FrameIdxReg1, TargetStackID::ScalablePredVector);
+      MFI.setStackID(FrameIdxReg1, TargetStackID::ScalablePredicateVector);
       if (RPI.isPaired())
-        MFI.setStackID(FrameIdxReg2, TargetStackID::ScalablePredVector);
+        MFI.setStackID(FrameIdxReg2, TargetStackID::ScalablePredicateVector);
     }
 
     if (X0Scratch != AArch64::NoRegister)

@@ -28922,7 +28922,7 @@ static SDValue matchMergedBFX(SDValue Root, SelectionDAG &DAG,
 
   EVT VT = Root.getValueType();
 
-  if (Root.getOpcode() != ISD::AND)
+  if (!VT.isScalarInteger() || Root.getOpcode() != ISD::AND)
     return SDValue();
 
   SDValue N0 = Root.getOperand(0);
@@ -28932,8 +28932,6 @@ static SDValue matchMergedBFX(SDValue Root, SelectionDAG &DAG,
     return SDValue();
 
   APInt RootMask = cast<ConstantSDNode>(N1)->getAsAPIntVal();
-  if (!RootMask.isMask())
-    return SDValue();
 
   SDValue Src;
   const auto IsSrc = [&](SDValue V) {
@@ -28949,7 +28947,7 @@ static SDValue matchMergedBFX(SDValue Root, SelectionDAG &DAG,
   APInt PartsMask(VT.getSizeInBits(), 0);
   while (!Worklist.empty()) {
     SDValue V = Worklist.pop_back_val();
-    if (!V.hasOneUse() && Src != V)
+    if (!V.hasOneUse() && (Src && Src != V))
       return SDValue();
 
     if (V.getOpcode() == ISD::OR) {
@@ -28965,7 +28963,11 @@ static SDValue matchMergedBFX(SDValue Root, SelectionDAG &DAG,
       if (!IsSrc(ShiftSrc) || !isa<ConstantSDNode>(ShiftAmt))
         return SDValue();
 
-      PartsMask |= (RootMask << cast<ConstantSDNode>(ShiftAmt)->getAsZExtVal());
+      auto ShiftAmtVal = cast<ConstantSDNode>(ShiftAmt)->getAsZExtVal();
+      if (ShiftAmtVal > RootMask.getBitWidth())
+        return SDValue();
+
+      PartsMask |= (RootMask << ShiftAmtVal);
       continue;
     }
 
@@ -28977,7 +28979,7 @@ static SDValue matchMergedBFX(SDValue Root, SelectionDAG &DAG,
     return SDValue();
   }
 
-  if (!RootMask.isMask() || !Src)
+  if (!Src)
     return SDValue();
 
   SDLoc DL(Root);

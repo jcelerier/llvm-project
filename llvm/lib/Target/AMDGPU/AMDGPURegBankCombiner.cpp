@@ -416,6 +416,10 @@ bool AMDGPURegBankCombinerImpl::lowerUniformBFX(MachineInstr &MI) const {
                            ? (Signed ? AMDGPU::S_BFE_I32 : AMDGPU::S_BFE_U32)
                            : (Signed ? AMDGPU::S_BFE_I64 : AMDGPU::S_BFE_U64);
 
+  // Pack the offset and width of a BFE into
+  // the format expected by the S_BFE_I32 / S_BFE_U32. In the second
+  // source, bits [5:0] contain the offset and bits [22:16] the width.
+
   // Ensure the high bits are clear to insert the offset.
   auto OffsetMask = B.buildConstant(S32, maskTrailingOnes<unsigned>(6));
   auto ClampOffset = B.buildAnd(S32, OffsetReg, OffsetMask);
@@ -424,9 +428,6 @@ bool AMDGPURegBankCombinerImpl::lowerUniformBFX(MachineInstr &MI) const {
   auto ShiftAmt = B.buildConstant(S32, 16);
   auto ShiftWidth = B.buildShl(S32, WidthReg, ShiftAmt);
 
-  // Transformation function, pack the offset and width of a BFE into
-  // the format expected by the S_BFE_I32 / S_BFE_U32. In the second
-  // source, bits [5:0] contain the offset and bits [22:16] the width.
   auto MergedInputs = B.buildOr(S32, ClampOffset, ShiftWidth);
 
   MRI.setRegBank(OffsetMask.getReg(0), *RB);
